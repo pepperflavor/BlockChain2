@@ -14,13 +14,12 @@ function reducer(state=init, action){
       case "LOGOUT"  :
         console.log('여긴 로그아웃');
         return {...state, id:'', pw : '', isLogin :false};
- 
-
       default:
         return state;
     }
 }
 
+export default reducer;
 // function const initialState = {}
 
 // export default (state = initialState, { type, payload }) => {

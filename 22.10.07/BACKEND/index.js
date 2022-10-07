@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require("cors");
-
+const { sequelize, user } = require('./public');
 const app = express();
 
 
@@ -30,6 +30,11 @@ app.get('/', (req, res)=>{
         credential : true, false (사용자 인증이 필요한 리소스를 접근 허용해줄지 안할지 쿠키 같은 것 등등)
     }))
 */ 
+sequelize.sync({force : false}).then(()=> {
+    console.log('연결이 잘 되었다');
+}).catch((err)=>{
+    console.log(err);
+})
 
 const options = {
     // 허용해줄 url 설정
@@ -42,20 +47,35 @@ app.use(express.json())
 app.use(cors(options));
 
 
-app.get('/', (req,res)=>{
-    res.send({id : aaa})
-})
+app.post("/login", async (req, res) => {
+    let { id, pw } = req.body;
+    const users = await user.findOne({
+      where: { user_id: id, user_pw: pw },
+    });
+      if(users){
+        res.send(true);
+      }else{
+        res.send(false);
+      }
+});
 
 
 // 회원가입
-app.post('/signUp', (req,res)=>{
+app.post('/signUp', async(req,res)=>{
     console.log(req.body);
     let {id,pw} = req.body;
-
-
-    res.send({
-        id , pw 
-    })
+    const users = await user.findOne({
+        where : {user_id : id, user_pw : pw}
+    });
+    if(!users){
+        user.create({
+            user_id : id, user_pw : pw
+        }).then(()=>{
+            res.send('가입완료!')
+        })
+    }else{
+        res.send('이미 존재하는 아이디 입니다.')
+    }
 })
 
 app.listen(8000,()=>{

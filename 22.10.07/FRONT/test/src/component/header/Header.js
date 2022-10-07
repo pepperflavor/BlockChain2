@@ -8,16 +8,16 @@ import {
   LoginWrap,
   LoginInput,
 } from "./styledComponent";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
 import { loginAction } from '../../redux/middleware/loginAction';
 
 
-const Header = () => {
+const Header = ({isLogin}) => {
   // 이걸 props로 넘겨주기만하면된다
   const idInput = useRef();
   const pwInput = useRef();
   const dispatch = useDispatch();
+  const userName = useSelector((state) => state.loginReducer.id);
 
   // 로그인할 수 잇는 상태와 회원가입 할 수 있는 상태
   const [wrapState, setWrapState] = useState(true);
@@ -35,17 +35,22 @@ const Header = () => {
   const nav = useNavigate();
 
   const login=() =>{
-    dispatch(loginAction.login(idInput.value,pwInput.value));
+    console.log(idInput.value, pwInput.value);
+    dispatch(loginAction.login(idInput.value,pwInput.value ));
+  }
+
+  const logOut=() =>{
+    dispatch(loginAction.logOut());
   }
 
   const signUp = () =>{
-    dispatch(loginAction.signUp(idInput.value, pwInput.value));
+    dispatch(loginAction.signUp(idInput.value, pwInput.value, setWrap()));
+    
   }
   
   const setWrap = ()=>{
     // 꺼져있으면 키고 켜져있으면 끔
     setWrapState(!wrapState);
-
     idInput.value = "";
     pwInput.value = "";
     idInput.current.value = "";
@@ -72,34 +77,54 @@ const Header = () => {
           </ContentBtn>
         </HeaderContent>
         <LoginWrap>
-          {wrapState ? (
+          {isLogin ? (
             <>
-              <label>아이디 : </label>
-              <LoginInput ref={idInput} />
-              <label>비밀번호 : </label>
-              <LoginInput ref={pwInput} />
-              <Button onClick={login}>로그인</Button>
-              <Button onClick={setWrap}>회원가입 하러가기</Button>
+              {/* 로그인 되어있으면 */}
+              <div>{userName}님 로그인 됨</div>
+              <Button onClick={logOut}>로그아웃</Button>
             </>
           ) : (
             <>
-              {" "}
-              <label>아이디 : </label>
-              <LoginInput
-                ref={idInput}
-                onChange={(e) => {
-                  idInput.value = e.target.value;
-                }}
-              />
-              <label>비밀번호 : </label>
-              <LoginInput
-                ref={pwInput}
-                onChange={(e) => {
-                  pwInput.value = e.target.value;
-                }}
-              />
-              <Button onClick={signUp}>회원가입</Button>
-              <Button onClick={setWrap}>로그인 하러가기</Button>
+              {wrapState ? (
+                <>
+                  <label>아이디 : </label>
+                  <LoginInput
+                    ref={idInput}
+                    onChange={(e) => {
+                      idInput.value = e.target.value;
+                    }}
+                  />
+                  <label>비밀번호 : </label>
+                  <LoginInput
+                    ref={pwInput}
+                    onChange={(e) => {
+                      pwInput.value = e.target.value;
+                    }}
+                  />
+                  <Button onClick={login}>로그인</Button>
+                  <Button onClick={setWrap}>회원가입 하러가기</Button>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <label>아이디 : </label>
+                  <LoginInput
+                    ref={idInput}
+                    onChange={(e) => {
+                      idInput.value = e.target.value;
+                    }}
+                  />
+                  <label>비밀번호 : </label>
+                  <LoginInput
+                    ref={pwInput}
+                    onChange={(e) => {
+                      pwInput.value = e.target.value;
+                    }}
+                  />
+                  <Button onClick={signUp}>회원가입</Button>
+                  <Button onClick={setWrap}>로그인 하러가기</Button>
+                </>
+              )}
             </>
           )}
         </LoginWrap>
