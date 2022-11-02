@@ -87,6 +87,8 @@
         any를 사용한 곳에서는 타입스크립트 컴파일러가 작동하지 않게된다.
         따라서 런타임 검사를 수행하는곳, 어떤 데이터를 받게될지 모르는 곳에 사용함
         그외에는 잘 사용하지 않는다.
+
+        any 와 unknown은 다른 것이다
 */
 
 /*
@@ -138,4 +140,19 @@
             function isOlder(user: User, checkAge: number) {
             return checkAge > user.age;
             }
+*/
+
+/*
+        Function 함수형 타입
+        ex) let getfn : Function; // 이렇게 함수형으로 선언
+
+        그러나 이렇게 함수형으로 선언만 해놓으면 다른 함수가 덮어 씌워질 수 도있음
+        따라서 동작 방식을 세세하게 써줘야함
+
+        ex) 
+        let combineValues : (a : number, b : number) => number; // 이렇게 적어주면
+        이와 같은 형식의 함수만 담을 수 있음
+
+
+        !!! 콜백 함수는 자신이 전달되는 인수가 반환 값을 기대하지 않는 경우에도 값을 반환할 수 있습니다.
 */
