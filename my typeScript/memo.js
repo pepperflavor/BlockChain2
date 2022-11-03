@@ -207,6 +207,7 @@
         ** "files" :  지정한 개별 파일만 컴파일한다. 작은 프로젝트에서 쓰임      
 */
 
+
 /*
         compilerOptions : 컴파일 옵션
 
@@ -233,6 +234,24 @@
 */
 
 /*
-        stric : true - 모든 stric유형의 검사 옵션을 사용할 수 있다.(마다 모든 옵션을 true로 설정한 것과 같을듯)
-        noImplicitAny : 코드에서 우리가 작업하고 있는 매개변수와 값을 명확히 할 수 있도록 해준다
+        **** stric 옵션 설정
+
+        stric : true - 모든 stric유형의 검사 옵션을 사용할 수 있다.(따로 개별로 false를 주는게 아니면 모든 옵션을 true로 설정한 것과 같음)
+
+        noImplicitAny : 코드에서 우리가 작업하고 있는 매개변수와 값을 명확히 할 수 있도록 해준다.
+
+        stricNullChecks : true - null 값을 잠재적으로 가질 수 잇는 값에 접근하고 작업하는 방식을 타입스크립트에게 알려준다. ex) 타입스크립트가 html 요소를 검사하지는 않으므로 html 요소를 가르킬때 에러를 반환할 수 있을지 모름, 이 때 이 설정을 하면 dom노드에 포인터를 반환하지 못하면 null을 반환하도록 할 수 있다 
+
+        stricBindCallApply : 결합하고 호출하고 적용하는데 유용하다. bind 사용시 엮은 함수에 필요한 파라미터의 데이터 타입 등을 확인해준다.
+
+        alwaysStrict : Strict 모드를 사용하는 js가 추가되도록 제어함
+*/
+/*
+        코드 품질
+        noUnusedParameters : 사용하지 않는 매개변수, 변수 함수들을 걸러줌
+
+        noImplicitReturns : 함수에서 반환하는 경우가 하나라도 있다면 뭐라도 returndmf wnjdigka
+
+        
+
 */
