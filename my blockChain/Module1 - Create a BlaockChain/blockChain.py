@@ -39,8 +39,24 @@ class BlockChain:
         new_proof = 1
         check_proof = False
         while check_proof is False:
-            # 연산이 비대칭으로 이루어져야한다고한다.
-            hash_operation = hashlib.sha256()
+            # 연산이 비대칭으로 이루어져야한다고한다. 
+            # 해시 연산 결과 선행4개의 문자가 0으로 시작하는지 확인하기 => 그렇다면 해당 증명을 새로운 블록을 채굴할 수 있는
+            # 증명이 되는 것이다.
+            hash_operation = hashlib.sha256(str(new_proof**2 - previous_proof**2).encode()).hexdigest()
+            # [:4] : 인덱스 0, 1,2,3을 뜻함
+            if hash_operation[:4] == '0000':
+                check_proof = True
+            else:
+                new_proof += 1
+            return new_proof
 
+    # 블록 해싱할 함수
+    # 블록(딕셔너리를)을 문자열로 바꿈(=해싱)한다
+    # memo에 설명 참조
+    def hash(self, block):
+        # .encode() 를 붙여서 hashlib sha256에서 요구하는 형식을 갖춤
+        encoded_block = json.dumps(block, sort_keys= True).encode()
+        # .hexdigest() 함수를 통해서 16진수 형식으로 값을 도출해냄
+        return hashlib.sha256(encoded_block).hexdigest()
     
 # 2 - mining blockChain
