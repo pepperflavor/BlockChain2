@@ -1,6 +1,9 @@
 // unspentTxOut 생성 클래스
 
 export class UnspentTxOut implements IUnspentTxOut{
+    find(arg0: (txOutId: any, txOutIndex: any) => boolean) {
+        throw new Error("Method not implemented.");
+    }
     public txOutId : string; // transaction 객체의 해시 값
     public txOutindex : number; // transaction 객체에서 txOuts 배열의 인덱스 값 
     public account : string;

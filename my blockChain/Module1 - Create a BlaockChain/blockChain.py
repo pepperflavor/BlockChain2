@@ -70,8 +70,8 @@ class BlockChain:
             if current_block['previous_hash'] != self.hash(previous_block):
                 return False
             # proof_of_work에서 작업한 선행 문자열4개가 '0000'인지 확인
-            # 현재블록의 증명키를 가져와서 현재증명을 불러온다
             previous_proof = previous_block['proof']
+            # 현재블록의 증명키를 가져와서 현재증명을 불러온다
             proof = current_block['proof']
             hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
             if hash_operation[:4] != '0000':

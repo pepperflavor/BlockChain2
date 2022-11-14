@@ -24,17 +24,20 @@ app.use((req,res,next)=>{
     next();
 })
 
+
 // sendTransaction 라우터
 app.post("/sendTransaction",(req,res)=>{
     try {
         const receivedTx : ReceivedTx = req.body;
-       
         Wallet.sendTransaction(receivedTx);
+        console.log(receivedTx);
+        
     } catch (e) {
         if(e instanceof Error) console.log(e.message);
     }
     res.json({});
 })
+
 
 app.get('/', (req,res) => {
     res.send('bit-chain');

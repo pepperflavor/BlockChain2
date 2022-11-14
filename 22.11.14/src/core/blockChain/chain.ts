@@ -3,12 +3,14 @@ import { DIFFICULTY_ADJUSTMENT_INTERVAL } from "@core/config";
 import { TxIn } from './../transaction/txin';
 import { Transaction } from './../transaction/transaction';
 import { TxOut } from './../transaction/txout';
+import { UnspentTxOut } from './../transaction/unspentTxOut';
 
 // 블록의 체인 
 export class Chain{
     // blockchain Block 배열의 타입을 가진 변수 
     private blockchain : Block[];
     private unspentTxOuts : IUnspentTxOut[];
+    private transactionPool : ITransaction[];
     // 처음에 생성될때 constructor로 클래스를 동적할당으로 생성 했을때
     constructor(){
         // 최초의 블록은 거의 하드코딩으로 넣어준다.
@@ -17,6 +19,28 @@ export class Chain{
         this.blockchain = [Block.getGENESIS()];
         // UTXO라는 배열을 만들어 준 것 
         this.unspentTxOuts = [];
+        this.transactionPool = [];
+    }
+
+    // 트랜잭션 풀을 반환 해주는 함수 
+    public getTransactionPool(): ITransaction[]{
+        return this.transactionPool;
+    }
+
+    //트랜젝션 풀에 트랜잭션 추가 함수
+    public appendTransactionPool(transaction: ITransaction){
+        this.transactionPool.push(transaction);
+    }
+
+    // 트랜잭션 풀 업데이트
+    public updateTransactionPool(newBlock:IBlock){
+        let txPool : ITransaction[] = this.getTransactionPool();
+        newBlock.data.forEach((tx:ITransaction)=>{
+            txPool=txPool.filter((txp)=>{
+                txp.hash !== tx.hash;
+            })
+        })
+        this.transactionPool= txPool;
     }
 
     // UTXO get 함수 (UTXO조회 함수 )
@@ -153,4 +177,40 @@ export class Chain{
         return adjustmentBlock; //  최초 블록 or -10번째 블록 반환
     }
 
+    updateUTXO(tx: ITransaction){
+        // txOutId, txOutIndex, account, amount 
+        // UTXO 배열을 가져오고 getUnspentTxOuts 함수를 사용해서 
+        const unspentTxOut : UnspentTxOut[] = this.getUnspentTxOuts();
+        // UTXO에 추가할 unspentTxOuts 객체를 생성
+        // 트랜잭션 객체의 배열안에 있는 txOut 객체를 사용해서 새로 생성될
+        // UnspentTxOut 객체를 만들어준다.
+        const newUnspentTxOuts = tx.txOuts.map((txout,index)=>{
+            return new UnspentTxOut(tx.hash,index,txout.account,txout.amount);
+        })
+
+        // filter로 unspentTxOut 배열 안에서 txout 객체들은 제거하고 생성된 newUnspentTxOuts 배열을 붙여준다.
+        const tmp = unspentTxOut.filter((v1:UnspentTxOut)=>{
+            const bool =  tx.txIns.find( (v2:TxIn)=>{
+                return v1.txOutId === v2.txOutId && v1.txOutindex=== v2.txOutIndex;
+            })
+            // !undefined == true;
+            // !{} == false;
+            return !bool;
+        }).concat(newUnspentTxOuts);
+        // UTXO에 사용한 unspentTxOut객체 제거와 생성된 unspentTxOuts 객체를 UTXO에 추가
+
+        // tmp 배열을 reduce 함수로 acc 배열 안에서 해당 조건에 맞는 값을 내보내주고 acc 배열에 push해서 배열에 넣어주고 acc 배열을 반환해서 unspentTmp에 담고
+        // this.unspentTxOuts에 바인딩
+        let unspentTmp : UnspentTxOut[] =[];
+        const result = tmp.reduce((acc, utxo)=>{
+            const find = acc.find(({txOutId, txOutindex})=>{
+                return txOutId === utxo.txOutId && txOutindex === utxo.txOutindex;
+            })
+            if(!find) acc.push(utxo)
+            return acc
+        },unspentTmp)
+        this.unspentTxOuts = result;
+
+
+    }
 }
