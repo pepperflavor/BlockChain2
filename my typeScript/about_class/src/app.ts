@@ -46,6 +46,7 @@ accountingCopy.describe();
 */
 
 // 클래스에 기반한 인스턴스를 참조하도록 수정한 것
+// 타입을 해당 클래스로 지정해줘야한다. 타입스크립트는 this가 무엇으로 참조되어야 하는지 인식하기 때문
 
 class Department_2{
     name : string;
@@ -53,11 +54,21 @@ class Department_2{
     constructor( n: string){
         this.name = n;
     }
-    // 타입을 해당 클래스로 지정해줘야한다. 타입스크립트는 this가 무엇으로 참조되어야 하는지 인식하기 때문
     describe(this : Department_2){
         console.log('Department : '+ this.name);
         
     }
 }
+// 하지만 이렇게만 쓰면 
+/*
+    const accountingCopy = { describe : accounting.describe };
+
+    accountingCopy.describe();
+    이렇게 외부에서 참조했을 때는 클래스타입의 객체를 참조하지 않기 때문에 오류가 난다. 따라서 더미 매개변수를 추가해 타입안정성을 추가해주어야 한다.
+*/
+
+const accountingCopy_2 = { name : 'add-name',describe : accounting.describe };
+
+accountingCopy_2.describe();
 
 
