@@ -1,10 +1,9 @@
 class Department{
-    // private id: string;
+    // private readonly id: string;
     // private name : string;
-    private employees : string[] = [];
+    protected employees : string[] = [];
 
-    constructor(private id: string, public name: string){
-
+    constructor(private readonly id: string, public name: string){
     }
     
     describe(this : Department){
@@ -21,7 +20,40 @@ class Department{
     }
 }
 
-const accounting = new Department('d1','Accounting');
+//===== 상속
+class ITDepartment extends Department {
+    admins: string[];
+    constructor(id: string, admins: string[]){
+        super(id, 'IT'); // 여기에 넣으면 기본 클래스에 전달함
+        this.admins = admins;
+    }
+}
+
+class AccountingDepartment extends Department {
+    constructor(id : string, private reports: string[]){
+        super(id, 'Accounting');
+    }
+
+    addEmployee(name: string){
+        if(name === 'Max'){
+            return;
+        }
+        this.employees.push(name);
+    }
+
+    addReport(text: string){
+        this.reports.push(text);
+    }
+
+    printReports(){
+        console.log(this.reports);
+    }
+}
+
+
+const accounting = new Department('d1', 'Accounting');
+
+// const accounting = new ITDepartment('d1','Accounting');  // 이 코드도 같은 결과를 보여준다(단, 생성자를 설정하지 않았을때). 상속했기 때문
 
 accounting.describe();
 accounting.name = 'NEW NAME';
@@ -35,5 +67,13 @@ accounting.addEmployees('Marry');
 accounting.describe();
 accounting.printEmployeeInfo();
 
+const accounting_IT = new AccountingDepartment('d2', []);
+accounting_IT.addReport('Something went wrong...');
+accounting_IT.printReports();
+
+
+const it = new ITDepartment('s1', ['Max']);
+
+it.addEmployees('Jerry');
 
 

@@ -4,7 +4,8 @@
     this : 클래스 내부의 클래스 속성이나 메소드를 참조할 때 쓰는 키워드
 
 
-    private 로 선언 : 해당 클래스, 즉 생성된 객체 내부에서만 접근가능
+    private 로 선언 : 해당 클래스, 즉 생성된 객체 내부에서만 접근가능하다. 상속받는 클래스에서도 사용 불가능하다.
+    protected : 상속받는(확장하는) 클래스에서도 접근할 수 있으면서도 외부에서 변경 불가능한 속성으로 만들어준다
 
 
     // 이런식으로 처음에 선언따로 초기화따로 안해도된다
@@ -21,4 +22,44 @@
 
 
     ***** 초기화 후 변경되면 안되는 필드에 readonly 선언
+
+    private, public, readonly 같은 설정은 js에는 없고 ts에만 있음
+    컴파일된 js 파일을 보면 프로토타입에 메서드들이 추가되고 필드에 대한 선언들은 안보임
+
+    +)
+        클래스는 자바스크립트 객체에 대한 청사진이다.
+        클래스의 속성이란 클래스의 변수를 의미한다 
+        private 는 속성을 "클래스 밖에서 접근할 수 없는 것"으로 규정한다
+
+
+        class Product {
+            title: string;
+            price: number;
+            private isListed: boolean;
+            
+            constructor(name: string, pr: number) {
+                this.title = name;
+                this.price = pr;
+                this.isListed = true;
+            }
+        }
+
+
+===============> 이렇게 줄일 수 있다
+
+        class Product{
+            private isListed: boolean;
+
+            constructor(public title: string, public price: number){
+                this.isListed = true;
+            }
+        }
+
+
+        상속받은 클래스에 고유 생성자를 추가하지 않는 하위 클래는 부모 클래스의 생성자를 그대로 갖다 쓴다
+
+        하위클래스 constructor에 
+        super()를 실행시켜줘야한다
+        super() : 부모 클래스의 생성자를 호출한다. 
+
 */
