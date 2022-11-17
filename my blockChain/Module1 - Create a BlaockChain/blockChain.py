@@ -108,7 +108,10 @@ def mine_block():
     previous_proof = previous_block['proof']
     # 체인의 마지막 블록의 증명을 갖고온다
     proof = blockchain.proof_of_work(previous_proof)
-    # hash 함수 사용
+    # hash 함수 사용해서 현재 필요한 이전해시의 해시값을 얻는다
+    previous_hash = blockchain.hash(previous_block)
+    block = blockchain.create_block(proof, previous_hash)
+    response = {'message' : 'Congratulatioin! you just mined a block!'}
 
 
 # 공식문서 http router 참조
