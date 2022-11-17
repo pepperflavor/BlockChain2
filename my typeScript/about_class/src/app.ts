@@ -1,9 +1,16 @@
 class Department{
     // private readonly id: string;
     // private name : string;
+    static fiscalYear = 2022;
     protected employees : string[] = [];
 
     constructor(private readonly id: string, public name: string){
+    }
+
+    // 인스턴스화 하지 않고 접근할 수 있는 정적 메소드로 만들기 위해 static사용
+    static createEmployee(name: string){
+        return {name : name}
+
     }
     
     describe(this : Department){
@@ -30,8 +37,26 @@ class ITDepartment extends Department {
 }
 
 class AccountingDepartment extends Department {
+    private lastReport: string;
+
+    get mostRecentReport(){
+        if(this.lastReport){
+
+            return this.lastReport;
+        }
+        throw new Error('No report found')
+    }
+
+    set mostRecentReport(value : string){
+        if(!value){
+            throw new Error('Please pass in a valid value!')
+        }
+        this.addReport(value);
+    }
+
     constructor(id : string, private reports: string[]){
         super(id, 'Accounting');
+        this.lastReport = reports[0]
     }
 
     addEmployee(name: string){
@@ -43,6 +68,7 @@ class AccountingDepartment extends Department {
 
     addReport(text: string){
         this.reports.push(text);
+        this.lastReport = text;
     }
 
     printReports(){
@@ -68,12 +94,28 @@ accounting.describe();
 accounting.printEmployeeInfo();
 
 const accounting_IT = new AccountingDepartment('d2', []);
-accounting_IT.addReport('Something went wrong...');
-accounting_IT.printReports();
 
+// 게터 접근하기
+// () 괄호 X, 속성에 접근하듯이 써야한다.
+console.log(accounting_IT.mostRecentReport);
+
+// 세터 접근하기
+// 값에 접근하듯이 사용한다. 이렇게 하면 위의 메소드에 값을 전달한다
+accounting_IT.mostRecentReport = '';
+
+
+accounting_IT.addReport('Something went wrong...');
+
+accounting_IT.printReports();
+accounting_IT.printEmployeeInfo();
 
 const it = new ITDepartment('s1', ['Max']);
 
 it.addEmployees('Jerry');
 
+
+// new 키워드 없이 직접 클래스에서 호출하는 것이기 때문에 클래스를 그룹화 메커니즘으로 사용하는 것이라도 할 수 있다.
+const employee1 = Department.createEmployee('Max');
+console.log(employee1);
+console.log(Department.fiscalYear);
 
