@@ -12,6 +12,7 @@ from flask import Flask, jsonify
 class BlockChain:
     # 클래스 init
     def __init__(self):
+        # chain이 배열형태의 데이터라고 선언한 것 
         self.chain = []
         # 제네시스블록 설정
         self.create_block(proof = 1, previous_hash = '0')
@@ -52,13 +53,14 @@ class BlockChain:
 
     # 블록 해싱할 함수
     # 블록(딕셔너리를)을 문자열로 바꿈(=해싱)한다
-    # memo에 설명 참조
+    # aboutBlockChain.js에 설명 참조
     def hash(self, block):
         # .encode() 를 붙여서 hashlib sha256에서 요구하는 형식을 갖춤
         encoded_block = json.dumps(block, sort_keys= True).encode()
         # .hexdigest() 함수를 통해서 16진수 형식으로 값을 도출해냄
         return hashlib.sha256(encoded_block).hexdigest()
 
+    # 체인이 유효한지 확인하는 함수(모든 블록의 이전해시값이 이전블록의 해시값과 같아야 한다)
     def is_chain_valid(self, chain):
         previous_block = chain[0]
         # 인덱스의 첫번째값이 0 이 아닌 1로 만들어줌
@@ -70,10 +72,14 @@ class BlockChain:
             if current_block['previous_hash'] != self.hash(previous_block):
                 return False
             # proof_of_work에서 작업한 선행 문자열4개가 '0000'인지 확인
+            # 이전 블록(객체)의 proof 키의 값에 접근하는 것 
             previous_proof = previous_block['proof']
             # 현재블록의 증명키를 가져와서 현재증명을 불러온다
             proof = current_block['proof']
+            # 채굴자들이 풀어야하는 문제를 정의한 해시연산
             hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
+            # [:4] : 첫번째~네번째 문자를 뜻함
+            # 여기서는 만든 블록들의 선행 4문자열이 0000 이기 때문에 이렇게 검증했다
             if hash_operation[:4] != '0000':
                 return False
             # 다음 블록의 검증 과정에서는 방금 검증한 current블록이 pre블록이 되어야한다. 그 설정을 해주는 것
@@ -83,3 +89,26 @@ class BlockChain:
              
     
 # 2 - mining blockChain
+
+# 웹앱 생성
+app = Flask(__name__)
+
+# 블록체인 생성
+blockchain = BlockChain()
+
+# 새 블록 채굴하기
+
+@app.route("/mine_block", method =['GET', 'POST'])
+    # 1. 블록을 캐려면 이전 증명을 기반으로 증명을 찾아서 작업증명 문제를 해결해야함
+    # 2. 그러기 위해서 proof_of_work를 사용할 건데 인수로(self, previous_proof) 이전 블록의 증명이 필요하다.
+    # 그래서 get_previous_block 함수를 이용해 마지막 블록을 얻어와 딕셔너리에서 증명키를 취한다.
+    # ++++ 마지막블록의 해시 값을 이전해시 값으로 할당해주어야 새로운 마지막 블록으로 등록할 수 있기 때문에
+def mine_block():
+    previous_block = blockchain.get_previous_block()
+    previous_proof = previous_block['proof']
+    # 체인의 마지막 블록의 증명을 갖고온다
+    proof = blockchain.proof_of_work(previous_proof)
+    # hash 함수 사용
+
+
+# 공식문서 http router 참조
