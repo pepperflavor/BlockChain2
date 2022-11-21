@@ -97,7 +97,8 @@ app = Flask(__name__)
 blockchain = BlockChain()
 
 # 새 블록 채굴하기
-
+# 경로 / 앞에 전체 url이 담겨있다 여기서는" http://127.0.0.1:5000/ " 임
+# get 요청은 얻는 것만, post는 생성도 한다
 @app.route("/mine_block", method =['GET', 'POST'])
     # 1. 블록을 캐려면 이전 증명을 기반으로 증명을 찾아서 작업증명 문제를 해결해야함
     # 2. 그러기 위해서 proof_of_work를 사용할 건데 인수로(self, previous_proof) 이전 블록의 증명이 필요하다.
@@ -111,7 +112,15 @@ def mine_block():
     # hash 함수 사용해서 현재 필요한 이전해시의 해시값을 얻는다
     previous_hash = blockchain.hash(previous_block)
     block = blockchain.create_block(proof, previous_hash)
-    response = {'message' : 'Congratulatioin! you just mined a block!'}
+    # 딕셔너리 형에서 '키' : '값'
+    response = {'message' : 'Congratulatioin! you just mined a block!',
+                'index': block['index'],
+                'timestamp': block['timstamp'],
+                'proof': block['proof'],
+                'previous_hash' : block['previous_hash']}
+    # 공식문서 http router 참조
+    return jsonify(response), 200
 
 
-# 공식문서 http router 참조
+
+#2. 트랜잭션 생성 분산네트워크에서 새로운 작업 생성
