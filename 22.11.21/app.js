@@ -164,7 +164,6 @@ const genesis = {
 
 
 
-
     web3 통신하고
     IPC를 사용해서 로컬에 실행시킨 geth 프라이빗 네트워크를
     블록체인 네트워크에서 메타마스크나 다른 pc와 통신하려면 설정이 필요한데
@@ -207,11 +206,51 @@ const genesis = {
     ==================================================
 
 
-    geth --datadir node --http --http.addr "127.0.0.1" --http.port 9000 --http.corsdomain "*" \
---http.api "admin,miner,txpool,web3,personal,eth,net" --syncmode full --networkid 7722 
- 명령어 실행 후 
+    .puppeth 폴더에 들어간 후 
+        geth --datadir node --http --http.addr "127.0.0.1" --http.port 9000 --http.corsdomain "*" \
+    --http.api "admin,miner,txpool,web3,personal,eth,net" --syncmode full --networkid 7722 
+    명령어 실행 해야함
+    명령어 실행한 다음
 
-터미널에 wsl 하나 더 연다음
+    터미널에 wsl 하나 더 연다음
     geth attach http://127.0.0.1:9000
-
 */
+
+/*
+    코인 베이스 계정으로 채굴하기
+
+    코인 베이스 계정을 마이너로 설정
+    miner.setEtherbase(eth.accounts[0])
+
+    miner.start(1); start(갯수는 스레드 개수);
+    스레드는 일해주는 인력이 많다
+
+    마이닝 스탑
+    miner.stop()
+
+    코인 베이스 계정의 채굴한 잔고 확인 해보기
+    eth.getBalance(eth.accounts[0])
+
+    web3.fromWei(eth.getBalance(eth.accountd[0], "ether"))
+
+    코인 베이스 계정의 잔고에서 트랜잭션을 보내서 잔고를 보내보자
+    eth.sendTransaction({from : eth.accounts[0], to : eth.accounts[1], value : web3.toWei(10)})
+    ***** HTTP 액세스를 통한 계정 잠금 해제는 web3.js:6365:9(45)에서 금지되어 있습니다. ***** 라는 오류가 뜸
+    그래서 geth를 실행할때 설정 해줘야 할게 있다.
+
+    계정 잠금 해제하고 실행
+    geth --datadir node --http --allow-insecure-unlock --http.addr "127.0.0.1" --http.port 9000 --http.corsdomain "*" \
+    --http.api "admin,miner,txpool,web3,personal,eth,net" --syncmode full --networkid 7722
+
+    실행한 다음 eth.accounts 로 계정 있나 확인
+    코인 채굴해놓고 계정 잔고 확인한 다음
+    personal.unlockAccount(eth.coinbase) || personal.unlockAccount(eth.account[0]) 이렇게 써도된다
+
+
+    트랜잭션을 보내면 txpool 트랜잭션 풀에 먼저 들어오고
+    아직 트랜잭션이 pending 상태로 들어있고
+    마이닝을 실행하면 트랜잭션 풀에서 트랜잭션이 처리가 된다.
+
+
+
+    */
