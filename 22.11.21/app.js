@@ -220,18 +220,29 @@ const genesis = {
     코인 베이스 계정으로 채굴하기
 
     코인 베이스 계정을 마이너로 설정
+    -----------------------------
     miner.setEtherbase(eth.accounts[0])
-
+    -----------------------------
+    
+    
+    -----------------------------
     miner.start(1); start(갯수는 스레드 개수);
+    -----------------------------
     스레드는 일해주는 인력이 많다
 
     마이닝 스탑
+    -----------------------------
     miner.stop()
-
+    -----------------------------
+    
     코인 베이스 계정의 채굴한 잔고 확인 해보기
+    -----------------------------
     eth.getBalance(eth.accounts[0])
-
+    -----------------------------
+    
+    -----------------------------
     web3.fromWei(eth.getBalance(eth.accountd[0], "ether"))
+    -----------------------------
 
     코인 베이스 계정의 잔고에서 트랜잭션을 보내서 잔고를 보내보자
     eth.sendTransaction({from : eth.accounts[0], to : eth.accounts[1], value : web3.toWei(10)})
@@ -252,5 +263,60 @@ const genesis = {
     마이닝을 실행하면 트랜잭션 풀에서 트랜잭션이 처리가 된다.
 
 
+    특정 계정 unlock 시켜주기
+    ** networkid 내걸로 바꿔야함(7722 맞음)
+    ** 비밀번호 파일 : .puppeth에 설치해놓은 node 폴더에 비밀번호를 적어 놓은 txt 형식 파일을 생성
 
-    */
+    geth --datadir node --http --http.addr "127.0.0.1" --http.port 9000 --http.corsdomain "*" \
+    --http.api "admin,eth,debug,miner,net,txpool,personal,web3" --syncmode full --networkid 7722\
+    --port 30300 --ws --ws.addr "127.0.0.1" --ws.port 9005 --ws.origins "*" \
+    --ws.api "admin,eth,debug,miner,net,txpool,personal,web3" \
+    --allow-insecure-unlock --unlock "0,1" --password "./node/password.txt"
+
+    자바 스크립트 콘솔창에
+    bytecode = "0x" 뒤에 솔리디티로 컴파일한 bin 파일의 내용을 붙여 넣어준다
+    자바스크립트 콘솔창에서 bytecode 변수에 값을 할당
+
+    abi = 솔리디티로 컴파일한 abi 파일의 내용을 붙여 넣어준다
+    자바스크립트는 콘솔창에서 abi 변수에 값을 할당
+
+    트랜잭션 객체를 만들어준다
+    from 키값과 data 키값으로 객체를 생성해준다
+    txObject = {from : eth.coinbase, data : bytecode};
+    eth.sendTransaction(위에서 만든 트랜잭션 객체 txObject)
+    
+    그다음 miner.start(1) 로 트랜잭션 블록으로 캐기
+    stop 한다음 txpool로 블록으로 캤는지 확인 할 수 있다.
+
+    그다음
+
+    eth.getTransaction(트랜잭션의 해쉬값 문자열 그대로)
+
+    =====================================================================================================
+    +) 포트번호 30300란??
+    TCP 포트 30300은 전송 제어 프로토콜을 사용한다. TCP는  TCP/IP 네트워크의 주요프로토콜중 하나이다.
+    TCP는 연결 지향 프로토콜이며 종단간 통신을 설정하려면 핸드쉐이킹이 필요합니다. 연결이 설정된 경우에만 사용자 데이터를 
+    연결을 통해 양방향으로 보낼 수 있습니다.
+     UDP 포트 30300 은 TCP로 통신을 보장하지 않습니다. 포트 30300 의 UDP 는 신뢰할 수 없는 서비스를 제공하며 
+     데이터그램이 예고 없이 복제되거나 순서가 바뀌거나 누락되어 도착할 수 있습니다. 
+     포트 30300 의 UDP 는 오류 검사 및 수정이 필요하지 않거나 응용 프로그램에서 수행되지 않는다고 생각하여 
+     네트워크 인터페이스 수준에서 이러한 처리의 오버헤드를 피합니다.
+    UDP(사용자 데이터그램 프로토콜)는 최소 메시지 지향 전송 계층 프로토콜입니다(프로토콜은 IETF RFC 768에 문서화되어 있음).
+    =====================================================================================================
+
+
+
+    복습 =============================================
+        wsl 창 두개 열고
+        1. cd ~로 최상단 이동 .puppeth들어간 다음
+        geth --datadir node init
+
+        geth --datadir node --http --http.addr "127.0.0.1" --http.port 9000 --http.corsdomain "*" \
+        --http.api "admin,miner,txpool,web3,personal,eth,net" --syncmode full --networkid 7722 로 계정 잠금 해제
+
+        geth --networkid 7722 console 2 --rpc --rpcport 8000 --rpcaddr 127.0.0.1
+        킨 다음 
+        계정 확인 -> 명령어는 위에 참고
+
+
+*/
