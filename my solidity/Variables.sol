@@ -44,6 +44,4 @@ contract WorkingWithVariables{
     function setMyString(string memory _myString) public {
         myString = _myString;
     }
-
-    
 }
