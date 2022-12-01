@@ -1,26 +1,33 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+// SPDX-License-Identifier: GPL-3.0
 
-contract SendMoneyExample{
+pragma solidity ^0.8.1;
+
+contract SendMoneyExample {
 
     uint public balanceReceived;
+    uint public lockedUntil;
 
-    //payable 을 선언해 이 함수로 돈을 받는다는걸 컴파일러가 인식하게 함
     function receiveMoney() public payable {
         balanceReceived += msg.value;
+        lockedUntil = block.timestamp + 1 minutes;
     }
 
-    // 위의 함수를 통해 송금받았다면 이 주소의 원장은 이 주소안에 보낸만큼 돈이 들어있다는걸 안다
-    function getBalance()public view returns(uint){
+    function getBalance() public view returns(uint) {
         return address(this).balance;
     }
 
-    // function wirhdrawMoney() public {
-    //     address payable to = msg.sender;
+    function withdrawMoney() public {
+        if(lockedUntil < block.timestamp) {
+            address payable to = payable(msg.sender);
+            to.transfer(getBalance());
+        }
+    }
 
-    //     // address가 호출 할 수 있는 속성(잔고도 속성, 전송도 함수)
-    //     // 전송 함수를 호출하려면 인수가 필요하다. 필요한 인수는 이 변수에 저장되어있는 주소로
-    //     // 전송하려는 웨이의 양
-    //     to.transfer(this.getBalance());
-    // }
+    function withdrawMoneyTo(address payable _to) public {
+        if(lockedUntil < block.timestamp) {
+            _to.transfer(getBalance());
+        }
+    }
 }
+
+// 입금 후 설정한 시간이 지난 후 출금할 수 있는 컨트랙트
