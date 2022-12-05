@@ -1,0 +1,15 @@
+{
+    "name": "soon NFT",
+    "description": "GUGU NFT",
+    "image": "https://gateway.pinata.cloud/ipfs/QmUb3ByuSRdvZ4xXqwswkWeUHq5cBmXb7wJkePEUXRmVmV",
+    "attributes": [
+      {
+        "trait_type": "Rank",
+        "value": 1
+      },
+      {
+        "trait_type": "Type",
+        "value": 1
+      }
+    ]
+  }
