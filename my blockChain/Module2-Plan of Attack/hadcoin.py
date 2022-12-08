@@ -113,8 +113,8 @@ class Blockchain:
                     longest_chain = chain
         if longest_chain:
             self.chain = longest_chain
-            return True
-        return False
+            return [True, self.chain]
+        return [False]
 
 
 # Part 2 - Mining our Blockchain
@@ -184,9 +184,6 @@ def Add_transaction():
     return jsonify(response), 201
 
 
-# Running the app
-# flask의 포트 번호는 5000번이다
-app.run(host = '0.0.0.0', port = 5000)
 
 
 # Part 3 - 합의 적용
@@ -194,4 +191,37 @@ app.run(host = '0.0.0.0', port = 5000)
 @app.route('/connect_node', methods = ['POST'])
 def connect_node():
     json = request.get_json()
-    json.get('')
+    # json에 담긴 노드의 주소 목록
+    nodes = json.get('nodes')
+    # 요청이 유효하지 않을때
+    if nodes is None:
+        return "NO Node", 400
+    # 노드의 주소를 루프로 반복해서 +1해주기
+    for node in nodes:
+        blockchain.add_node(node)
+    response = {
+        'message' : 'All the nodes are now connected.',
+        'total_nodes' : list(blockchain)
+    }
+    return jsonify(response), 201
+
+
+# 체인이 가장 긴 체인이 아닐경우 가장 긴체인으로 교체하도록 최종 요청
+#Replaceing the chain by the longest chain if needed
+app.route('/replace_chain', methods = ['GET'])
+def replace_chain():
+    # 인수를 따로 주지 않아도 된다. 객체의 메서드이면 self는 별다른 인수가 아님
+    # replace_chain 함수에서 리턴값을 bool로 주도록 했다. 
+    is_chain_replaced = blockchain.replace_chain()
+    if is_chain_replaced:
+        response = {'message': 'The nodes has different chains so the chain was replaced by the longest one',
+        'new chain' : blockchain.chain}
+    else:
+        response = {'message': 'Human, we have a problem. The Blockchain is not valid.',
+        'actual_chain' : blockchain.chain}
+    return jsonify(response), 200
+
+
+# Running the app
+# flask의 포트 번호는 5000번이다
+app.run(host = '0.0.0.0', port = 5000)
